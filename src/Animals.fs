@@ -39,3 +39,16 @@ type Node =
 let root: Node List =
     [ AnimalCollection(aquarium)
       Container("Cages", [ herbivoreCage; carnivoreCage ]) ]
+
+let getCountInAnimalCollection (animalCollection: AnimalCollection) =
+    animalCollection.Entries
+    |> List.sumBy (fun e -> e.Count)
+
+let getCountInNode (node: Node) =
+    match node with
+    | AnimalCollection animalCollection -> getCountInAnimalCollection animalCollection
+    | Container (_, animalCollections) ->
+        animalCollections
+        |> List.sumBy getCountInAnimalCollection
+
+let getTotalCount = List.sumBy getCountInNode
