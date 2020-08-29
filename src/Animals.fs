@@ -52,3 +52,17 @@ let getCountInNode (node: Node) =
         |> List.sumBy getCountInAnimalCollection
 
 let getTotalCount = List.sumBy getCountInNode
+
+let getPathsForAnimalCollection (animalCollection: AnimalCollection) =
+    animalCollection.Entries
+    |> List.map (fun e -> sprintf "%s.%s" animalCollection.Name e.Name)
+
+let getPathsForNode (node: Node) =
+    match node with
+    | AnimalCollection animalCollection -> getPathsForAnimalCollection animalCollection
+    | Container (name, animalCollections) ->
+        animalCollections
+        |> List.collect getPathsForAnimalCollection
+        |> List.map (fun subPath -> sprintf "%s.%s" name subPath)
+
+let getAllPaths (nodes: Node List) = nodes |> List.collect getPathsForNode

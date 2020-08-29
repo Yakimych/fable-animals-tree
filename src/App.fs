@@ -19,3 +19,5 @@ myButton.onclick <-
 Browser.Dom.console.log (sprintf "Root: %A" Animals.root)
 let totalCount = getTotalCount root
 Browser.Dom.console.log (sprintf "Total count: %A" totalCount)
+let allPaths = getAllPaths root
+Browser.Dom.console.log (sprintf "Paths: %A" allPaths)
