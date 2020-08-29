@@ -1,6 +1,7 @@
 module App
 
 open Browser.Dom
+open Animals
 
 // Mutable variable to count the number of times we clicked the button
 let mutable count = 0
@@ -15,6 +16,4 @@ myButton.onclick <-
         count <- count + 1
         myButton.innerText <- sprintf "You clicked: %i time(s)" count
 
-let giraffe: Animals.AnimalEntry = { Name = "Giraffe"; Count = 2 }
-
-Browser.Dom.console.log (sprintf "Giraffe: %A" giraffe)
+Browser.Dom.console.log (sprintf "Root: %A" Animals.root)
