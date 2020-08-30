@@ -1,4 +1,10 @@
-import { getTotalCount, TreeNode, getPaths, findInNodes } from "./Animals";
+import {
+  getTotalCount,
+  TreeNode,
+  getPaths,
+  findInNodes,
+  addAnimals,
+} from "./Animals";
 
 const fishesNode: TreeNode = {
   name: "Fishes",
@@ -70,7 +76,7 @@ test("getTotalCount [ Cages, Carnivores ] should return 5", () => {
   expect(carnivoresCount).toBe(5);
 });
 
-test("getPaths should return correct paths", () => {
+test("getPaths should return all paths", () => {
   const allPaths = getPaths(allNodes);
   const expectedPaths = [
     "Aquarium.Fishes",
@@ -84,9 +90,18 @@ test("getPaths should return correct paths", () => {
   expect(allPaths).toEqual(expectedPaths);
 });
 
-test("getPaths should return correct node", () => {
+test("findInNodes should return fishes node", () => {
   const actualFishesNode = findInNodes(["Aquarium", "Fishes"], allNodes);
-  console.log("Found nodes: ", actualFishesNode);
-
   expect(actualFishesNode).toEqual([fishesNode]);
+});
+
+test("getTotalCount should return incremented tiger count after addAnimals is called", () => {
+  const tigerPath = ["Cages", "Carnivores", "Tigers"];
+  const numberToAdd = 2;
+
+  const tigerCountBeforeAdding = getTotalCount(tigerPath, allNodes);
+  addAnimals(tigerPath, numberToAdd, allNodes);
+  const tigerCountAfterAdding = getTotalCount(tigerPath, allNodes);
+
+  expect(tigerCountBeforeAdding + numberToAdd).toEqual(tigerCountAfterAdding);
 });

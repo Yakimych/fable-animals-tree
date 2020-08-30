@@ -42,7 +42,6 @@ export const findInNodes = (path: string[], nodes: TreeNode[]): TreeNode[] =>
   nodes.flatMap((node) => findNode(path, node));
 
 export const getTotalCount = (path: string[], nodes: TreeNode[]): number => {
-  // TODO: Adjust recursion instead?
   const nodesAtPath =
     path.length === 0 ? nodes : nodes.flatMap((n) => findNode(path, n));
   const countsForNodes = nodesAtPath.map(getCountForNode);
@@ -64,4 +63,16 @@ export const getPaths = (nodes: TreeNode[]): string[] => {
   const allPaths = nodes.flatMap(getPathForNode);
   const sortedPaths = allPaths.slice().sort();
   return sortedPaths;
+};
+
+export const addAnimals = (
+  path: string[],
+  numberToAdd: number,
+  nodes: TreeNode[]
+) => {
+  const animalNodes = findInNodes(path, nodes);
+  for (const animalNode of animalNodes)
+    if (animalNode.payload.kind === "Leaf") {
+      animalNode.payload.count += numberToAdd;
+    }
 };
