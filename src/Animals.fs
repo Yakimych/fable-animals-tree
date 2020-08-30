@@ -2,67 +2,70 @@ module Animals
 
 type AnimalEntry = { Name: string; Count: int }
 
-type AnimalCollection =
-    { Name: string
-      Entries: AnimalEntry List }
+type Node =
+    | Leaf of AnimalEntry List // TODO: Leaf of count: int?
+    | SingleNode of Node
+    | Nodes of NamedNode List
 
-type Cage =
-    { Name: string
-      Collections: AnimalCollection List }
+and NamedNode = { Name: string; Node: Node }
 
 let spiders: AnimalEntry = { Name = "Spiders"; Count = 1 }
 let lizards: AnimalEntry = { Name = "Lizards"; Count = 15 }
 let fishes: AnimalEntry = { Name = "Fishes"; Count = 17 }
 
-let aquarium: AnimalCollection =
+let aquarium: NamedNode =
     { Name = "Aquarium"
-      Entries = [ spiders; lizards; fishes ] }
+      Node = Leaf([ spiders; lizards; fishes ]) }
 
 let zebras: AnimalEntry = { Name = "Zebras"; Count = 7 }
 let gnus: AnimalEntry = { Name = "Gnus"; Count = 8 }
 
-let herbivoreCage: AnimalCollection =
+let herbivoreCage: NamedNode =
     { Name = "Herbivores"
-      Entries = [ zebras; gnus ] }
+      Node = Leaf([ zebras; gnus ]) }
 
 let tigers: AnimalEntry = { Name = "Tigers"; Count = 2 }
 let lions: AnimalEntry = { Name = "Lions"; Count = 3 }
 
-let carnivoreCage: AnimalCollection =
+let carnivoreCage: NamedNode =
     { Name = "Carnivores"
-      Entries = [ tigers; lions ] }
+      Node = Leaf([ tigers; lions ]) }
 
-type Node =
-    | AnimalCollection of AnimalCollection
-    | Container of name: string * AnimalCollection List
+let cages: NamedNode =
+    { Name = "Cages"
+      Node = Nodes([ herbivoreCage; carnivoreCage ]) }
 
-let root: Node List =
-    [ AnimalCollection(aquarium)
-      Container("Cages", [ herbivoreCage; carnivoreCage ]) ]
+let root: Node = Nodes([ aquarium; cages ])
 
-let getCountInAnimalCollection (animalCollection: AnimalCollection) =
-    animalCollection.Entries
-    |> List.sumBy (fun e -> e.Count)
+let getCountInLeaf (animalEntries: AnimalEntry list) =
+    animalEntries |> List.sumBy (fun e -> e.Count)
 
-let getCountInNode (node: Node) =
+let rec getCountInNode (node: Node): int =
     match node with
-    | AnimalCollection animalCollection -> getCountInAnimalCollection animalCollection
-    | Container (_, animalCollections) ->
-        animalCollections
-        |> List.sumBy getCountInAnimalCollection
+    | Leaf animalEntries -> getCountInLeaf animalEntries
+    | SingleNode node -> getCountInNode node
+    | Nodes nodes ->
+        nodes
+        |> List.sumBy (fun namedNode -> getCountInNode namedNode.Node)
 
-let getTotalCount = List.sumBy getCountInNode
+let getPathsForLeaf (name: string) (animalEntries: AnimalEntry List) =
+    animalEntries
+    |> List.map (fun e -> sprintf "%s.%s" name e.Name)
 
-let getPathsForAnimalCollection (animalCollection: AnimalCollection) =
-    animalCollection.Entries
-    |> List.map (fun e -> sprintf "%s.%s" animalCollection.Name e.Name)
+let concatPaths (currentSegment: string) (restOfPath: string) =
+    match currentSegment with
+    | "" -> restOfPath
+    | nonEmptySegment -> sprintf "%s.%s" nonEmptySegment restOfPath
 
-let getPathsForNode (node: Node) =
+let rec getPathsForNamedNode (namedNode: NamedNode) =
+    getPathsForNode namedNode.Name namedNode.Node
+
+and getPathsForNode (name: string) (node: Node) =
     match node with
-    | AnimalCollection animalCollection -> getPathsForAnimalCollection animalCollection
-    | Container (name, animalCollections) ->
-        animalCollections
-        |> List.collect getPathsForAnimalCollection
-        |> List.map (fun subPath -> sprintf "%s.%s" name subPath)
-
-let getAllPaths (nodes: Node List) = nodes |> List.collect getPathsForNode
+    | Leaf animalEntries -> getPathsForLeaf name animalEntries
+    | SingleNode singleNode -> getPathsForNode name singleNode
+    | Nodes nodes ->
+        let concatWithName = concatPaths name
+        nodes
+        |> List.collect getPathsForNamedNode
+        |> List.map concatWithName

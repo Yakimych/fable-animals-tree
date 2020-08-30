@@ -17,7 +17,7 @@ myButton.onclick <-
         myButton.innerText <- sprintf "You clicked: %i time(s)" count
 
 Browser.Dom.console.log (sprintf "Root: %A" Animals.root)
-let totalCount = getTotalCount root
+let totalCount = getCountInNode root
 Browser.Dom.console.log (sprintf "Total count: %A" totalCount)
-let allPaths = getAllPaths root
+let allPaths = getPathsForNode "" root
 Browser.Dom.console.log (sprintf "Paths: %A" allPaths)
