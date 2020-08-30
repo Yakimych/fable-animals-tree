@@ -56,3 +56,7 @@ const cagesNode: TreeNode = {
 };
 
 export const allNodes: TreeNode[] = [aquariumNode, cagesNode];
+
+export const getTotalCount = (nodes: TreeNode[]) => {
+  return 1;
+};
