@@ -1,6 +1,4 @@
-import React from "react";
-import App from "./App";
-import { getTotalCount, TreeNode } from "./Animals";
+import { getTotalCount, TreeNode, getPaths, findInNodes } from "./Animals";
 
 const fishesNode: TreeNode = {
   name: "Fishes",
@@ -14,7 +12,10 @@ const spidersNode: TreeNode = {
 
 const aquariumNode: TreeNode = {
   name: "Aquarium",
-  payload: { kind: "Container", children: [fishesNode, spidersNode] },
+  payload: {
+    kind: "Container",
+    children: [fishesNode, spidersNode],
+  },
 };
 
 const zebrasNode: TreeNode = {
@@ -54,7 +55,38 @@ const cagesNode: TreeNode = {
 
 export const allNodes: TreeNode[] = [aquariumNode, cagesNode];
 
-test("getTotalCount should return 33", () => {
-  const totalCount = getTotalCount(allNodes);
+test("getTotalCount [] should return 33", () => {
+  const totalCount = getTotalCount([], allNodes);
   expect(totalCount).toBe(33);
+});
+
+test("getTotalCount [ Aquarium, Fishes ] should return 12", () => {
+  const fishesCount = getTotalCount(["Aquarium", "Fishes"], allNodes);
+  expect(fishesCount).toBe(12);
+});
+
+test("getTotalCount [ Cages, Carnivores ] should return 5", () => {
+  const carnivoresCount = getTotalCount(["Cages", "Carnivores"], allNodes);
+  expect(carnivoresCount).toBe(5);
+});
+
+test("getPaths should return correct paths", () => {
+  const allPaths = getPaths(allNodes);
+  const expectedPaths = [
+    "Aquarium.Fishes",
+    "Aquarium.Spiders",
+    "Cages.Carnivores.Lions",
+    "Cages.Carnivores.Tigers",
+    "Cages.Herbivores.Gnus",
+    "Cages.Herbivores.Zebras",
+  ];
+
+  expect(allPaths).toEqual(expectedPaths);
+});
+
+test("getPaths should return correct node", () => {
+  const actualFishesNode = findInNodes(["Aquarium", "Fishes"], allNodes);
+  console.log("Found nodes: ", actualFishesNode);
+
+  expect(actualFishesNode).toEqual([fishesNode]);
 });

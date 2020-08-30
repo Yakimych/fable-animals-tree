@@ -17,7 +17,51 @@ const getCountForNode = (node: TreeNode): number => {
   }
 };
 
-export const getTotalCount = (nodes: TreeNode[]) => {
-  const countsForNodes = nodes.map(getCountForNode);
+const findNode = (path: string[], currentNode: TreeNode): TreeNode[] => {
+  if (path.length === 0 || currentNode.name !== path[0]) return [];
+
+  switch (currentNode.payload.kind) {
+    case "Leaf":
+      if (path.length === 1 && currentNode.name === path[0]) {
+        return [currentNode];
+      }
+      return [];
+    case "Container":
+      if (path.length === 1 && currentNode.name === path[0]) {
+        return [currentNode];
+      }
+      const nextPath = path.slice(1);
+      const foundNodes = currentNode.payload.children.flatMap((c) =>
+        findNode(nextPath, c)
+      );
+      return foundNodes;
+  }
+};
+
+export const findInNodes = (path: string[], nodes: TreeNode[]): TreeNode[] =>
+  nodes.flatMap((node) => findNode(path, node));
+
+export const getTotalCount = (path: string[], nodes: TreeNode[]): number => {
+  // TODO: Adjust recursion instead?
+  const nodesAtPath =
+    path.length === 0 ? nodes : nodes.flatMap((n) => findNode(path, n));
+  const countsForNodes = nodesAtPath.map(getCountForNode);
+
   return sum(countsForNodes);
+};
+
+const getPathForNode = (node: TreeNode): string[] => {
+  switch (node.payload.kind) {
+    case "Leaf":
+      return [node.name];
+    case "Container":
+      const childPaths = node.payload.children.flatMap(getPathForNode);
+      return childPaths.map((childPath) => `${node.name}.${childPath}`);
+  }
+};
+
+export const getPaths = (nodes: TreeNode[]): string[] => {
+  const allPaths = nodes.flatMap(getPathForNode);
+  const sortedPaths = allPaths.slice().sort();
+  return sortedPaths;
 };
